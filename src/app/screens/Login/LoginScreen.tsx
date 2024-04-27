@@ -7,15 +7,60 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {UserMetadata} from '@supabase/supabase-js';
 
 import logo from '../../../assets/images/google.png';
 import background from '../../../assets/images/background.jpg';
 import font from '../../config/font';
 import colors from '../../config/colors';
+import {supabase} from '../../utils/supabase';
 
 const LoginScreen = () => {
   const {width, height} = Dimensions.get('window');
 
+  GoogleSignin.configure({
+    webClientId:
+      '162355051324-5se238mbg61o201q79atuepcd60j32lm.apps.googleusercontent.com',
+    offlineAccess: true,
+    forceCodeForRefreshToken: true,
+    profileImageSize: 120,
+  });
+
+  const signInWithGoogle = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      if (userInfo.idToken) {
+        const {data, error} = await supabase.auth.signInWithIdToken({
+          provider: 'google',
+          token: userInfo.idToken,
+        });
+        if (data) {
+          saveDataToSupabase(data.user?.user_metadata);
+          // console.log(data.user?.user_metadata.full_name);
+        }
+        if (error) {
+          console.log(error);
+        }
+      } else {
+        throw new Error('No ID token present!');
+      }
+    } catch (error) {
+      console.error('Google Sign-In error:', error);
+    }
+  };
+
+  const saveDataToSupabase = async (users: UserMetadata | undefined) => {
+    await supabase
+      .from('Users')
+      .insert({
+        name: users?.full_name,
+        email: users?.email,
+        image: users?.avatar_url,
+      })
+      .select();
+  };
   return (
     <View style={styles.container}>
       <Image
@@ -29,7 +74,7 @@ const LoginScreen = () => {
         </Text>
       </View>
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={signInWithGoogle}>
         <Image source={logo} style={styles.buttonIcon} />
         <Text style={styles.buttonText}>Sign In With Google</Text>
       </TouchableOpacity>
