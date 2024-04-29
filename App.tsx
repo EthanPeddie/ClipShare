@@ -1,11 +1,14 @@
 import {StyleSheet, View} from 'react-native';
 import React from 'react';
-import LoginScreen from './src/app/screens/Login/LoginScreen';
+import {NavigationContainer} from '@react-navigation/native';
+import StackNavigation from './src/app/navigations/StackNavigation';
 
 const App = () => {
   return (
     <View style={styles.container}>
-      <LoginScreen />
+      <NavigationContainer>
+        <StackNavigation />
+      </NavigationContainer>
     </View>
   );
 };

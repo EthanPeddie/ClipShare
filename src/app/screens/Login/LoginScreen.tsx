@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useEffect} from 'react';
 import {
   Dimensions,
   Image,
@@ -9,6 +10,8 @@ import {
 } from 'react-native';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {UserMetadata} from '@supabase/supabase-js';
+import {useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import logo from '../../../assets/images/google.png';
 import background from '../../../assets/images/background.jpg';
@@ -16,8 +19,25 @@ import font from '../../config/font';
 import colors from '../../config/colors';
 import {supabase} from '../../utils/supabase';
 
+type RootStackParamList = {
+  navigate(arg0: string): unknown;
+  Home: undefined;
+};
+
 const LoginScreen = () => {
   const {width, height} = Dimensions.get('window');
+  const navigation = useNavigation<RootStackParamList>();
+
+  useEffect(() => {
+    checkAuthentication();
+  }, []);
+
+  const checkAuthentication = async () => {
+    const userToken = await AsyncStorage.getItem('userToken');
+    if (userToken) {
+      navigation.navigate('Home');
+    }
+  };
 
   GoogleSignin.configure({
     webClientId:
@@ -38,7 +58,11 @@ const LoginScreen = () => {
         });
         if (data) {
           saveDataToSupabase(data.user?.user_metadata);
-          // console.log(data.user?.user_metadata.full_name);
+          await AsyncStorage.setItem(
+            'userToken',
+            data.session?.access_token || '',
+          );
+          navigation.navigate('Home');
         }
         if (error) {
           console.log(error);
@@ -61,6 +85,7 @@ const LoginScreen = () => {
       })
       .select();
   };
+
   return (
     <View style={styles.container}>
       <Image
