@@ -1,23 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect} from 'react';
-import {
-  Dimensions,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Dimensions, Image, Text, TouchableOpacity, View} from 'react-native';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import {UserMetadata} from '@supabase/supabase-js';
-import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useNavigation} from '@react-navigation/native';
+import {UserMetadata} from '@supabase/supabase-js';
 
+import {supabase} from '../../utils/supabase';
 import logo from '../../../assets/images/google.png';
 import background from '../../../assets/images/background.jpg';
-import font from '../../config/font';
-import colors from '../../config/colors';
-import {supabase} from '../../utils/supabase';
+import {styles} from './styles';
 
 type RootStackParamList = {
   navigate(arg0: string): unknown;
@@ -39,36 +31,40 @@ const LoginScreen = () => {
     }
   };
 
-  GoogleSignin.configure({
-    webClientId:
-      '162355051324-5se238mbg61o201q79atuepcd60j32lm.apps.googleusercontent.com',
-    offlineAccess: true,
-    forceCodeForRefreshToken: true,
-    profileImageSize: 120,
-  });
+  const configureGoogleSignIn = () => {
+    GoogleSignin.configure({
+      webClientId:
+        '162355051324-5se238mbg61o201q79atuepcd60j32lm.apps.googleusercontent.com',
+      offlineAccess: true,
+      forceCodeForRefreshToken: true,
+      profileImageSize: 120,
+    });
+  };
 
   const signInWithGoogle = async () => {
     try {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
-      if (userInfo.idToken) {
-        const {data, error} = await supabase.auth.signInWithIdToken({
-          provider: 'google',
-          token: userInfo.idToken,
-        });
-        if (data) {
-          saveDataToSupabase(data.user?.user_metadata);
-          await AsyncStorage.setItem(
-            'userToken',
-            data.session?.access_token || '',
-          );
-          navigation.navigate('Home');
-        }
-        if (error) {
-          console.log(error);
-        }
-      } else {
+      if (!userInfo.idToken) {
         throw new Error('No ID token present!');
+      }
+
+      const {data, error} = await supabase.auth.signInWithIdToken({
+        provider: 'google',
+        token: userInfo.idToken,
+      });
+
+      if (data) {
+        saveDataToSupabase(data.user?.user_metadata);
+        await AsyncStorage.setItem(
+          'userToken',
+          data.session?.access_token || '',
+        );
+        navigation.navigate('Home');
+      }
+
+      if (error) {
+        console.log(error);
       }
     } catch (error) {
       console.error('Google Sign-In error:', error);
@@ -85,6 +81,8 @@ const LoginScreen = () => {
       })
       .select();
   };
+
+  configureGoogleSignIn();
 
   return (
     <View style={styles.container}>
@@ -106,60 +104,5 @@ const LoginScreen = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  backgroundImage: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-  },
-  overlay: {
-    backgroundColor: colors.transnp,
-    position: 'absolute',
-    top: 65,
-    padding: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 20,
-  },
-  title: {
-    fontSize: 40,
-    fontFamily: font['outfit-bold'],
-    color: colors.light,
-  },
-  subtitle: {
-    fontFamily: font['outfit-regular'],
-    fontSize: 20,
-    textAlign: 'center',
-    color: colors.light,
-    marginTop: 10,
-  },
-  button: {
-    backgroundColor: colors.white,
-    width: 350,
-    position: 'absolute',
-    bottom: 60,
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 20,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 15,
-  },
-  buttonIcon: {
-    width: 40,
-    height: 40,
-  },
-  buttonText: {
-    fontSize: 20,
-    fontFamily: font['outfit-medium'],
-    textAlign: 'center',
-  },
-});
 
 export default LoginScreen;
