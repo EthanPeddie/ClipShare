@@ -27,7 +27,7 @@ const LoginScreen = () => {
   const checkAuthentication = async () => {
     const userToken = await AsyncStorage.getItem('userToken');
     if (userToken) {
-      navigation.navigate('Home');
+      navigation.navigate('HomeTabNavigation');
     }
   };
 
@@ -60,7 +60,7 @@ const LoginScreen = () => {
           'userToken',
           data.session?.access_token || '',
         );
-        navigation.navigate('Home');
+        navigation.navigate('HomeTabNavigation');
       }
 
       if (error) {
