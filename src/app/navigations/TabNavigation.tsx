@@ -6,6 +6,7 @@ import HomeScreen from '../screens/Home/HomeScreen';
 import AddScreen from '../screens/Add/AddScreen';
 import SearchScreen from '../screens/Search/SearchScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
+import colors from '../config/colors';
 
 interface Props {
   color: string;
@@ -16,7 +17,7 @@ const Tab = createBottomTabNavigator();
 
 const tabBarOptions = {
   headerShown: false,
-  tabBarActiveTintColor: 'black',
+  tabBarActiveTintColor: colors.primary,
 };
 
 const tabIcons = {
