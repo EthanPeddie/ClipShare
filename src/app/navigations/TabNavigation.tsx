@@ -3,10 +3,10 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import HomeScreen from '../screens/Home/HomeScreen';
-import AddScreen from '../screens/Add/AddScreen';
 import SearchScreen from '../screens/Search/SearchScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
 import colors from '../config/colors';
+import AddScreenNavigator from './AddScreenNavigator';
 
 interface Props {
   color: string;
@@ -53,8 +53,8 @@ const TabNavigation = () => {
         }}
       />
       <Tab.Screen
-        name="Add"
-        component={AddScreen}
+        name="AddNavigator"
+        component={AddScreenNavigator}
         options={{
           tabBarIcon: ({color, size}) => tabIcons.Add({color, size}),
         }}
