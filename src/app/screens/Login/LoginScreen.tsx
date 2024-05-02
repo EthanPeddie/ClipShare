@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect} from 'react';
+import React from 'react';
 import {Dimensions, Image, Text, TouchableOpacity, View} from 'react-native';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -20,16 +19,16 @@ const LoginScreen = () => {
   const {width, height} = Dimensions.get('window');
   const navigation = useNavigation<RootStackParamList>();
 
-  useEffect(() => {
-    checkAuthentication();
-  }, []);
+  // useEffect(() => {
+  //   checkAuthentication();
+  // }, []);
 
-  const checkAuthentication = async () => {
-    const userToken = await AsyncStorage.getItem('userToken');
-    if (userToken) {
-      navigation.navigate('HomeTabNavigation');
-    }
-  };
+  // const checkAuthentication = async () => {
+  //   const userToken = await AsyncStorage.getItem('userToken');
+  //   if (userToken) {
+  //     navigation.navigate('HomeTabNavigation');
+  //   }
+  // };
 
   const configureGoogleSignIn = () => {
     GoogleSignin.configure({

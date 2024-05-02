@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {
   ScrollView,
@@ -15,16 +15,39 @@ import {
 } from '../../../navigations/types';
 import {styles} from './PreviewStyles';
 import {saveDataToSupabase, uploadVideoToS3} from './api';
+import {supabase} from '../../../utils/supabase';
 
 const PreviewScreen = () => {
   const {video} = useRoute<AddScreenRouteProps>().params || {};
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
+  const [userId, setUserId] = useState([]);
   const navigation = useNavigation<AddScreenNavigationProps>();
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  const fetchUserData = async () => {
+    const userEmail = (await supabase.auth.getUser()).data.user?.email;
+
+    let {data, error} = await supabase
+      .from('Users')
+      .select('id')
+      .eq('email', userEmail)
+      .single();
+    if (data) {
+      console.log(data);
+      setUserId(data.id);
+    }
+    if (error) {
+      console.log(error);
+    }
+  };
 
   const handlePublic = async () => {
     const awsVideoUrl = await uploadVideoToS3(video);
-    await saveDataToSupabase(title, description, awsVideoUrl);
+    await saveDataToSupabase(title, description, awsVideoUrl, userId);
     navigation.navigate('Add');
   };
 

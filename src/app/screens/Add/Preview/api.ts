@@ -28,10 +28,11 @@ export const saveDataToSupabase = async (
   title: string,
   description: string,
   awsVideoUrl: string | undefined,
+  users: never[],
 ) => {
   const {data, error} = await supabase
     .from('PostLists')
-    .insert([{title, description, video: awsVideoUrl}])
+    .insert([{title, description, video: awsVideoUrl, user_id: users}])
     .select();
   if (data) {
     console.log(data);
