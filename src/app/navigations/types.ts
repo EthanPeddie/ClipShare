@@ -2,8 +2,8 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 export type AddStackParamList = {
-  Home: undefined;
-  Preview: {video: string; thumbnail: string} | undefined;
+  Add: undefined;
+  Preview: {video: string; thumbnail: string};
 };
 
 export type AddScreenNavigationProps = StackNavigationProp<

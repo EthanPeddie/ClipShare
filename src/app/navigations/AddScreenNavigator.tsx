@@ -2,7 +2,7 @@ import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 
 import AddScreen from '../screens/Add/AddScreen';
-import PreviewScreen from '../screens/Add/PreviewScreen';
+import PreviewScreen from '../screens/Add/Preview/PreviewScreen';
 import font from '../config/font';
 import colors from '../config/colors';
 

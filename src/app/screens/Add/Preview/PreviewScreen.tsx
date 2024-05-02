@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {useRoute} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {
   ScrollView,
   View,
@@ -9,16 +9,23 @@ import {
 } from 'react-native';
 import Video from 'react-native-video';
 
-import {AddScreenRouteProps} from '../../navigations/types';
+import {
+  AddScreenNavigationProps,
+  AddScreenRouteProps,
+} from '../../../navigations/types';
 import {styles} from './PreviewStyles';
+import {saveDataToSupabase, uploadVideoToS3} from './api';
 
 const PreviewScreen = () => {
   const {video} = useRoute<AddScreenRouteProps>().params || {};
-  const [title, setTitle] = useState<string>();
-  const [description, setDescription] = useState<string>();
+  const [title, setTitle] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const navigation = useNavigation<AddScreenNavigationProps>();
 
-  const handlePublic = () => {
-    console.log(title, description);
+  const handlePublic = async () => {
+    const awsVideoUrl = await uploadVideoToS3(video);
+    await saveDataToSupabase(title, description, awsVideoUrl);
+    navigation.navigate('Add');
   };
 
   const handleTitle = (text: string) => {
