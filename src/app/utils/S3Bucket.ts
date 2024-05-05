@@ -1,7 +1,8 @@
 import {S3} from 'aws-sdk';
+import {AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION} from '@env';
 
 export const s3 = new S3({
-  accessKeyId: 'AKIA47CRVELAFOLK3J7F',
-  secretAccessKey: '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',
-  region: 'ap-southeast-1',
+  accessKeyId: AWS_ACCESS_KEY_ID,
+  secretAccessKey: AWS_SECRET_ACCESS_KEY,
+  region: AWS_REGION,
 });

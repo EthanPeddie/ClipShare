@@ -26,21 +26,28 @@ const HomeScreen = () => {
   const {height} = Dimensions.get('window');
   const bottomTabHeight = useBottomTabBarHeight();
   const fullHeight = height - bottomTabHeight;
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     retrieveData();
   }, []);
   const retrieveData = async () => {
-    let {data, error} = await supabase
-      .from('PostLists')
-      .select('*,Users(name,email,image)')
-      .range(0, 9);
+    try {
+      setLoading(true);
+      let {data, error} = await supabase
+        .from('PostLists')
+        .select('*,Users(name,email,image)')
+        .order('id', {ascending: false});
 
-    if (data) {
-      console.log(data);
-      setPosts(data);
-    }
-    if (error) {
+      if (data) {
+        console.log(data);
+        setPosts(data);
+        setLoading(false);
+      }
+      if (error) {
+        console.log(error);
+      }
+    } catch (error) {
       console.log(error);
     }
   };
@@ -52,6 +59,8 @@ const HomeScreen = () => {
       ref={scrollToIndex}
       pagingEnabled
       data={posts}
+      onRefresh={retrieveData}
+      refreshing={loading}
       snapToInterval={fullHeight}
       renderItem={({item, index}) => (
         <View key={index}>
